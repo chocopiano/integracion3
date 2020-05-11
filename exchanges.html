@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+
+<body>
+
+    <h1>Exchanges Disponibles</h1>
+    <div id="demo"></div>
+
+    <script>
+        var socket = io("wss://le-18262636.bitzonte.com", {
+            path: '/stocks'
+        }, {
+            transports: ['websocket']
+        });
+        var x = [];
+        socket.emit('EXCHANGES');
+        var h = 0;
+        socket.on('EXCHANGES', (data) => {
+            for (var i in data) {
+                console.log(data[i].exchange_ticker);
+                x += "<form action='prueba.html'  method='get' > <input type='hidden' name = 'var' value =" + data[i].exchange_ticker + " / ><button type = 'submit' >" + data[i].name + "</button> </form > "
+            }
+            document.getElementById("demo").innerHTML = x;
+        })
+    </script>
+    <script>
+    </script>
+    </form>
+
+</body>
+
+</html>

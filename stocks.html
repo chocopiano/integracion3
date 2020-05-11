@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+
+<body>
+
+    <h1>HOLA!</h1>
+    <a href="inicio.html" class="button"><button type="button">Desconectarse</button></a>
+    <div id="demo"></div>
+
+    <script>
+        var socket = io("wss://le-18262636.bitzonte.com", {
+            path: '/stocks'
+        }, {
+            transports: ['websocket']
+        });
+        var x = [];
+        socket.emit('STOCKS');
+        var h = 0;
+        socket.on('STOCKS', (data) => {
+            for (var i = 0; i < data.length; i++) {
+                x += "<form action='accion.html'  method='get' > <input type='hidden' name = 'var' value =" + data[i].ticker + " / ><button type = 'submit' >" + data[i].company_name + "</button> </form > "
+            }
+            document.getElementById("demo").innerHTML = x;
+        })
+    </script>
+    </form>
+
+</body>
+
+</html>

@@ -1,0 +1,128 @@
+<html lang="en">
+
+<head>
+    <title>Acciones</title>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <script type="text/javascript">
+        var socket = io("wss://le-18262636.bitzonte.com", {
+            path: '/stocks'
+        }, {
+            transports: ['websocket']
+        });
+        var params = new URLSearchParams(window.location.search);
+        var c = params.get("var");
+        var lista = [];
+        let exchange;
+        class Exchanges {
+            constructor(nombre, acciones) {
+                this.nombre = nombre;
+                this.acciones = acciones;
+                this.volumenVenta = 0;
+                this.volumenCompra = 0;
+                this.lista = [];
+                this.tickers = [];
+            }
+        }
+        socket.emit('EXCHANGES');
+        socket.on('EXCHANGES', (data) => {
+            for (var a in data) {
+
+                if (data[a].exchange_ticker === c) {
+                    exchange = new Exchanges(data[a].name, data[a].listed_companies);
+                }
+            }
+        })
+        socket.emit('STOCKS');
+        socket.on('STOCKS', (data) => {
+            for (var a in data) {
+                if (exchange.acciones.includes(data[a].company_name)) {
+                    exchange.tickers.push(data[a].ticker)
+                }
+
+            }
+        })
+
+        function WebSocketTest() {
+            socket.on("BUY", (data) => {
+                if (exchange != undefined) {
+                    if (exchange.tickers.includes(data.ticker)) {
+                        exchange.volumenCompra += data.volume;
+                        var fecha = new Date(data.time);
+                        exchange.lista.push([fecha, exchange.volumenCompra, exchange.volumenVenta, exchange.volumenCompra + exchange.volumenVenta])
+                        google.charts.load('current', {
+                            packages: ['corechart', 'line']
+                        });
+                        google.charts.setOnLoadCallback(function() {
+                            drawCurveTypes(exchange.lista, exchange.nombre, exchange.acciones.length)
+                        });
+                    }
+                }
+            })
+            socket.on("SELL", (data) => {
+                if (exchange != undefined) {
+                    if (exchange.tickers.includes(data.ticker)) {
+                        exchange.volumenVenta += data.volume;
+                        var fecha = new Date(data.time);
+                        exchange.lista.push([fecha, exchange.volumenCompra, exchange.volumenVenta, exchange.volumenCompra + exchange.volumenVenta])
+                        google.charts.load('current', {
+                            packages: ['corechart', 'line']
+                        });
+                        google.charts.setOnLoadCallback(function() {
+                            drawCurveTypes(exchange.lista, exchange.nombre, exchange.acciones.length)
+                        });
+                    }
+                }
+            })
+        }
+    </script>
+
+</head>
+
+<body style="background-color:powderblue;">
+
+    <a href="inicio.html" class="button"><button type="button">Desconectarse</button></a>
+    <div id="container0" style="width: 900px; height: 500px"></div>
+    <script type="text/javascript">
+        WebSocketTest()
+
+        function drawCurveTypes(lista, nombre, cantidad) {
+            if (lista === undefined) {
+                return
+            }
+            if (cantidad === undefined) {
+                return;
+            }
+            if (nombre === undefined) {
+                return
+            }
+            var data = new google.visualization.DataTable();
+            data.addColumn('date', 'X');
+            data.addColumn('number', 'Volumen Compra');
+            data.addColumn('number', 'Volumen Venta');
+            data.addColumn('number', 'Volumen total');
+            data.addRows(
+                lista);
+
+            var options = {
+                title: 'Exchange ' + nombre + ' con una cantidad de ' + cantidad + ' acciones',
+                hAxis: {
+                    title: 'Time'
+                },
+                vAxis: {
+                    title: 'Volumen'
+                },
+                series: {
+                    1: {
+                        curveType: 'function'
+                    }
+                }
+            };
+
+            var chart = new google.visualization.LineChart(document.getElementById("container0"));
+            chart.draw(data, options);
+        }
+    </script>
+</body>
+
+</html>

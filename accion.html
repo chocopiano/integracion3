@@ -1,0 +1,150 @@
+<html>
+
+<head>
+    <title>Acciones</title>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <script type="text/javascript">
+        var socket = io("wss://le-18262636.bitzonte.com", {
+            path: '/stocks'
+        }, {
+            transports: ['websocket']
+        });
+        var params = new URLSearchParams(window.location.search);
+        var c = params.get("var");
+        const lista1 = [];
+        var volumen_ibm = 0;
+        var max_ibm = 0;
+        var min_ibm = 100000;
+        var var_ibm = 0;
+        var ultimo_ibm = 0;
+
+        function WebSocketTest() {
+            socket.on("UPDATE", (weme) => {
+                if (weme.ticker == c) {
+                    if (weme.value > max_ibm) {
+                        max_ibm = weme.value;
+                    }
+                    if (weme.value < min_ibm) {
+                        min_ibm = weme.value;
+                    }
+                    var_ibm = ((weme.value - ultimo_ibm) * 100) / ultimo_ibm;
+                    ultimo_ibm = weme.value;
+                    const nombre = weme.ticker;
+                    var fecha = new Date(weme.time);
+                    lista1.push([fecha, weme.value]);
+                    google.charts.load('current', {
+                        'packages': ['corechart'],
+                        'callback': drawChart1
+                    });
+
+                    google.charts.setOnLoadCallback(
+                        drawChart1
+                    );
+                    google.charts.load('current', {
+                        'packages': ['table'],
+                        'callback': drawTable1
+                    });
+                    google.charts.setOnLoadCallback(
+                        drawTable1);
+
+                }
+            })
+            socket.on("BUY", (data) => {
+                if (data.ticker === c) {
+                    volumen_ibm += data.volume;
+                    google.charts.load('current', {
+                        'packages': ['table'],
+                        'callback': drawTable2
+                    });
+                    google.charts.setOnLoadCallback(
+                        drawTable2
+                    );
+                }
+            })
+            socket.on("SELL", (data) => {
+
+                if (data.ticker === c) {
+                    volumen_ibm += data.volume;
+                    google.charts.load('current', {
+                        'packages': ['table'],
+                        'callback': drawTable2
+                    });
+                    google.charts.setOnLoadCallback(
+                        drawTable2);
+
+                }
+            })
+        }
+    </script>
+</head>
+
+<body>
+    <a href="inicio.html" class="button"><button type="button">Desconectarse</button></a>
+    <div id="container2" style="width: 900px; height: 500px"></div>
+    <div id="table_div2" style="width: 900px; height: 50px"></div>
+    <div id="div2" style="width: 900px; height: 50px"></div>
+    <script type="text/javascript">
+        WebSocketTest()
+
+        function drawChart1() {
+            var data = new google.visualization.DataTable();
+
+            data.addColumn('date', 'X');
+            data.addColumn('number', c);
+
+            data.addRows(lista1);
+            // data.addRows([
+            //     [1, 1],
+
+            // ]);
+
+            var options = {
+                hAxis: {
+                    title: 'Time'
+                },
+                vAxis: {
+                    title: 'Value'
+                }
+            };
+
+            var chart = new google.visualization.LineChart(document.getElementById('container2'));
+
+
+            chart.draw(data, options);
+        }
+
+        function drawTable1() {
+            var data = new google.visualization.DataTable();
+            data.addColumn('number', 'Alto Histórico');
+            data.addColumn('number', 'Bajo Histórico');
+            data.addColumn('number', 'Último precio');
+            data.addColumn('number', 'Variación porcentual');
+            data.addRows([
+                [max_ibm, min_ibm, ultimo_ibm, var_ibm]
+            ]);
+            var table = new google.visualization.Table(document.getElementById('table_div2'));
+            table.draw(data, {
+                showRowNumber: false,
+                width: '100%',
+                height: '100%'
+            });
+        }
+
+        function drawTable2() {
+            var data = new google.visualization.DataTable();
+            data.addColumn('number', 'Volumen Total transado');
+            data.addRows([
+                [volumen_ibm]
+            ]);
+            var table = new google.visualization.Table(document.getElementById('div2'));
+            table.draw(data, {
+                showRowNumber: false,
+                width: '100%',
+                height: '100%'
+            });
+        }
+    </script>
+</body>
+
+</html>

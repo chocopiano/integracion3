@@ -1,0 +1,121 @@
+<html>
+
+<head>
+    <title>Acciones</title>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <script type="text/javascript">
+        var socket = io("wss://le-18262636.bitzonte.com", {
+            path: '/stocks'
+        }, {
+            transports: ['websocket']
+        });
+        let listaExchanges = [];
+        class Exchanges {
+            constructor(nombre, container, div, div1, acciones) {
+                this.container = container;
+                this.div = div;
+                this.nombre = nombre;
+                this.acciones = acciones;
+                this.volumenVenta = 0;
+                this.volumenCompra = 0;
+                this.volumenTotal = 0;
+                this.lista = [];
+                this.div1
+                this.tickers = [];
+            }
+        }
+        socket.emit('EXCHANGES');
+        socket.on('EXCHANGES', (data) => {
+            var cont = 0;
+            for (var a in data) {
+                let container = "container" + cont.toString();
+                let div = "div" + cont.toString();
+                let div1 = "div1" + cont.toString();
+                const exchange = new Exchanges(data[a].name, container, div, div1, data[a].listed_companies);
+                listaExchanges.push(exchange)
+                cont++;
+
+            }
+        })
+        socket.emit('STOCKS');
+        socket.on('STOCKS', (data) => {
+            for (var a in data) {
+                for (var b in listaExchanges) {
+                    if (listaExchanges[b].acciones.includes(data[a].company_name)) {
+                        listaExchanges[b].tickers.push(data[a].ticker)
+                    }
+                }
+            }
+        })
+
+        function WebSocketTest() {
+            socket.on("BUY", (data) => {
+                let lista = [
+                    ['Task', "Volumen Total"]
+                ];
+                for (var b in listaExchanges) {
+                    if (listaExchanges[b].tickers.includes(data.ticker)) {
+                        listaExchanges[b].volumenCompra += data.volume;
+                        for (var i in listaExchanges) {
+                            lista.push([listaExchanges[i].nombre, listaExchanges[i].volumenCompra + listaExchanges[i].volumenVenta])
+                        }
+                        google.charts.load('current', {
+                            'packages': ['corechart']
+                        });
+                        google.charts.setOnLoadCallback(function() {
+                            drawChart(lista)
+                        });
+                        break;
+                    }
+                }
+            })
+            socket.on("SELL", (data) => {
+                let lista = [
+                    ['Task', "Volumen Total"]
+                ];
+                for (var b in listaExchanges) {
+                    if (listaExchanges[b].tickers.includes(data.ticker)) {
+                        listaExchanges[b].volumenVenta += data.volume;
+                        for (var i in listaExchanges) {
+                            lista.push([listaExchanges[i].nombre, listaExchanges[i].volumenCompra + listaExchanges[i].volumenVenta])
+                        }
+                        google.charts.load('current', {
+                            'packages': ['corechart']
+                        });
+                        google.charts.setOnLoadCallback(function() {
+                            drawChart(lista)
+                        });
+                        break;
+                    }
+                }
+            })
+        }
+    </script>
+</head>
+
+<body>
+    <a href="inicio.html" class="button"><button type="button">Desconectarse</button></a>
+    <div id="div2" style="width: 1000px; height: 500px"></div>
+    <script type="text/javascript">
+        WebSocketTest()
+
+        function drawChart(lista) {
+            if (lista === undefined) {
+                return;
+            }
+
+            var data = google.visualization.arrayToDataTable(lista)
+            var options = {
+                title: 'Participación de Mercado'
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById("div2"));
+
+            chart.draw(data, options);
+        }
+    </script>
+    </script>
+</body>
+
+</html>
