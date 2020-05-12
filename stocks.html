@@ -1,12 +1,91 @@
 <!DOCTYPE html>
 <html>
+
+<head>
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        
+        td,
+        th {
+            border: 1px solid blue;
+            text-align: left;
+            padding: 8px;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #ffffff;
+        }
+        
+        .button {
+            display: inline-block;
+            border-radius: 4px;
+            background-color: blue;
+            border: none;
+            color: black;
+            text-align: center;
+            font-size: 28px;
+            padding: 20px;
+            width: 200px;
+            transition: all 0.5s;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .button span {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            transition: 0.5s;
+        }
+        
+        .button span:after {
+            content: '\00bb';
+            position: absolute;
+            opacity: 0;
+            top: 0;
+            right: -20px;
+            transition: 0.5s;
+        }
+        
+        .button:hover span {
+            padding-right: 25px;
+        }
+        
+        .button:hover span:after {
+            opacity: 1;
+            right: 0;
+        }
+        
+        .topcorner {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+        
+        .topleft {
+            position: absolute;
+            top: 8px;
+            left: 16px;
+            font-size: 18px;
+        }
+    </style>
+</head>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
 
 <body>
+    <div class="topleft">
+        <a title="Acciones " href="https://www.emol.com/economia/acciones/" target="_blank"><img src="imgs/emol.png " width="30 " height="30 " alt="Acciones en emol " /></a>
+    </div>
+    <div class="topcorner">
+        <a href="index.html" class="button"><button  style="vertical-align:middle"><span><h2>Desconectarse</h2></span></button></a>
+    </div>
+    <h1 class="center" style="text-align:center; color:rgb(10, 10, 10);"><u>Listado de acciones</u></h1>
+    <div id="demo" class="btn-group"></div>
 
-    <h1>HOLA!</h1>
-    <a href="index.html" class="button"><button type="button">Desconectarse</button></a>
-    <div id="demo"></div>
 
     <script>
         var socket = io("wss://le-18262636.bitzonte.com", {
@@ -14,17 +93,60 @@
         }, {
             transports: ['websocket']
         });
-        var x = [];
+        // var x = "";
+        var x = "<form action='accion.html'><label for='acciones'><h2>Escoge una acción para ver sus detalles en el tiempo:</h2></label><select id='var' name='var'>"
         socket.emit('STOCKS');
         var h = 0;
         socket.on('STOCKS', (data) => {
             for (var i = 0; i < data.length; i++) {
-                x += "<form action='accion.html'  method='get' > <input type='hidden' name = 'var' value =" + data[i].ticker + " / ><button type = 'submit' >" + data[i].company_name + "</button> </form > "
+                // x += "<form action='accion.html'  method='get' > <input type='hidden' name = 'var' value =" + data[i].ticker + " / ><button type = 'submit' >" + data[i].company_name + "</button> </form > "
+                x += "<option value=" + data[i].ticker + ">" + data[i].company_name + "</option>"
+
             }
+            x += "</select><input type='submit'></form>"
             document.getElementById("demo").innerHTML = x;
         })
     </script>
     </form>
+    <hr>
+    <h3 class="center" style="text-align:center; border:2px solid Blue;">Además puedes ver en la siguiente tabla las acciones más valoradas en la actualidad</h3>
+    <table>
+        <tr>
+            <th>Accion</th>
+            <th>Valor por acción</th>
+            <th>Imagen</th>
+        </tr>
+        <tr>
+            <td>Berkshire Hathaway Inc.</td>
+            <td>$340.185</td>
+            <td>
+                <img src="imgs/bh.png" width="200" height="100"></td>
+        </tr>
+        <tr>
+            <td>Lindt & Sprüngli AG</td>
+            <td>$88.000 </td>
+            <td><img src="imgs/ls.png" width="200" height="100"></td>
+        </tr>
+        <tr>
+            <td>Seaboard Corporation</td>
+            <td>$4.160</td>
+            <td><img src="imgs/sc.png" width="200" height="100"></td>
+        </tr>
+        <tr>
+            <td>NVR Incorporated</td>
+            <td>$3.781,31</td>
+            <td><img src="imgs/nvr.png" width="200" height="100"></td>
+        </tr>
+        <tr>
+            <td>Booking Holdings</td>
+            <td>$2.086,90</td>
+            <td><img src="imgs/booking.png" width="200" height="100"></td>
+        </tr>
+    </table>
+    <hr>
+    <footer>
+        <h4>Para mayor información visitar: <a href="https://mercadosenlinea.inversionessecurity.cl/www/resumen.html ">Mercados en linea</a></h4>
+    </footer>
 
 </body>
 
