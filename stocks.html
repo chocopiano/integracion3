@@ -72,6 +72,8 @@
             font-size: 18px;
         }
     </style>
+    <title>Listado de acciones</title>
+    <link rel="icon" type="image/gif/png" href="imgs/acciones.png">
 </head>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
 
@@ -92,7 +94,7 @@
         }, {
             transports: ['websocket']
         });
-        var x = "<form action='accion.html'><label for='acciones'><h2>Escoge una acción para ver sus detalles en el tiempo:</h2></label><select id='var' name='var'>"
+        var x = "<form action='accion.html'><label for='acciones'><h2>Escoge una acción para ver sus detalles en el tiempo:</h2></label><select id='var' name='var'&wene>"
         socket.emit('STOCKS');
         var h = 0;
         socket.on('STOCKS', (data) => {

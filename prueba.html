@@ -2,6 +2,77 @@
 
 <head>
     <title>Acciones</title>
+    <style>
+        .button {
+            display: inline-block;
+            border-radius: 4px;
+            background-color: rgb(211, 211, 211);
+            border: none;
+            color: black;
+            text-align: center;
+            font-size: 28px;
+            padding: 20px;
+            width: 200px;
+            transition: all 0.5s;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .button span {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            transition: 0.5s;
+        }
+        
+        .button span:after {
+            content: '\00bb';
+            position: absolute;
+            opacity: 0;
+            top: 0;
+            right: -20px;
+            transition: 0.5s;
+        }
+        
+        .button:hover span {
+            padding-right: 25px;
+        }
+        
+        .button:hover span:after {
+            opacity: 1;
+            right: 0;
+        }
+        
+        .topcorner {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+        
+        .lesscorner {
+            position: absolute;
+            top: 220;
+            right: 0;
+        }
+        
+        .lescorner {
+            position: absolute;
+            top: 100;
+            right: 0;
+        }
+        
+        .corner {
+            position: absolute;
+            top: 320;
+            right: 0;
+        }
+        
+        .myDiv {
+            border: 5px outset rgb(5, 0, 0);
+            background-color: #ffffff;
+            text-align: center;
+        }
+    </style>
     <script src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
     <script type="text/javascript">
@@ -39,7 +110,6 @@
                 if (exchange.acciones.includes(data[a].company_name)) {
                     exchange.tickers.push(data[a].ticker)
                 }
-
             }
         })
 
@@ -53,9 +123,8 @@
                         google.charts.load('current', {
                             packages: ['corechart', 'line']
                         });
-                        google.charts.setOnLoadCallback(function() {
-                            drawCurveTypes(exchange.lista, exchange.nombre, exchange.acciones.length)
-                        });
+                        google.charts.setOnLoadCallback(
+                            drawCurveTypes);
                     }
                 }
             })
@@ -68,46 +137,48 @@
                         google.charts.load('current', {
                             packages: ['corechart', 'line']
                         });
-                        google.charts.setOnLoadCallback(function() {
-                            drawCurveTypes(exchange.lista, exchange.nombre, exchange.acciones.length)
-                        });
+                        google.charts.setOnLoadCallback(
+                            drawCurveTypes);
                     }
                 }
             })
         }
     </script>
-
+    <title>Mercado de valor</title>
+    <link rel="icon" type="image/gif/png" href="imgs/acciones.png">
 </head>
 
-<body style="background-color:powderblue;">
-
-    <a href="index.html" class="button"><button type="button">Desconectarse</button></a>
-    <div id="container0" style="width: 900px; height: 500px"></div>
+<body background="imgs/fondo2.png">
+    <div class="topcorner">
+        <a href="index.html" class="button"><button  style="vertical-align:middle"><span><h2>Desconectarse</h2></span></button></a>
+    </div>
+    <div class="lesscorner">
+        <a href="stocks.html" class="button"><button  style="vertical-align:middle"><span><h2>Listado de acciones</h2></span></button></a>
+    </div>
+    <div class="lescorner">
+        <a href="mercado.html" class="button"><button  style="vertical-align:middle"><span><h2>Posicionamiento de mercado</h2></span></button></a>
+    </div>
+    <div class="corner">
+        <a href="exchanges.html" class="button"><button  style="vertical-align:middle"><span><h2>Listado de mercados de valores</h2></span></button></a>
+    </div>
+    <h1 class="center" style="text-align:center; color:rgb(10, 10, 10);"><u>Información en vivo del mercado de valor</u></h1>
+    <div class="myDiv" id="container0" style="width: 900px; height: 500px"></div>
     <script type="text/javascript">
         WebSocketTest()
 
-        function drawCurveTypes(lista, nombre, cantidad) {
-            if (lista === undefined) {
-                return
-            }
-            if (cantidad === undefined) {
-                return;
-            }
-            if (nombre === undefined) {
-                return
-            }
+        function drawCurveTypes() {
             var data = new google.visualization.DataTable();
             data.addColumn('date', 'X');
             data.addColumn('number', 'Volumen Compra');
             data.addColumn('number', 'Volumen Venta');
             data.addColumn('number', 'Volumen total');
             data.addRows(
-                lista);
+                exchange.lista);
 
             var options = {
-                title: 'Exchange ' + nombre + ' con una cantidad de ' + cantidad + ' acciones',
+                title: 'Exchange ' + exchange.nombre + ' con una cantidad de ' + exchange.acciones.length + ' acciones',
                 hAxis: {
-                    title: 'Time'
+                    title: 'Tiempo en hora de Chile'
                 },
                 vAxis: {
                     title: 'Volumen'
@@ -123,6 +194,10 @@
             chart.draw(data, options);
         }
     </script>
+    <hr>
+    <footer>
+        <h4>Para mayor información visitar: <a href="https://mercadosenlinea.inversionessecurity.cl/www/resumen.html ">Mercados en linea</a></h4>
+    </footer>
 </body>
 
 </html>

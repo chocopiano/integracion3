@@ -1,7 +1,73 @@
 <html>
 
 <head>
-    <title>Acciones</title>
+    <title>Posicionamiento de Mercado</title>
+    <link rel="icon" type="image/gif/png" href="imgs/trazar.png">
+    <style>
+        .button {
+            display: inline-block;
+            border-radius: 4px;
+            background-color: rgb(211, 211, 211);
+            border: none;
+            color: black;
+            text-align: center;
+            font-size: 28px;
+            padding: 20px;
+            width: 200px;
+            transition: all 0.5s;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .button span {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            transition: 0.5s;
+        }
+        
+        .button span:after {
+            content: '\00bb';
+            position: absolute;
+            opacity: 0;
+            top: 0;
+            right: -20px;
+            transition: 0.5s;
+        }
+        
+        .button:hover span {
+            padding-right: 25px;
+        }
+        
+        .button:hover span:after {
+            opacity: 1;
+            right: 0;
+        }
+        
+        .topcorner {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+        
+        .lesscorner {
+            position: absolute;
+            top: 220;
+            right: 0;
+        }
+        
+        .lescorner {
+            position: absolute;
+            top: 100;
+            right: 0;
+        }
+        
+        .myDiv {
+            border: 5px outset rgb(5, 0, 0);
+            background-color: #ffffff;
+            text-align: center;
+        }
+    </style>
     <script src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
     <script type="text/javascript">
@@ -12,30 +78,21 @@
         });
         let listaExchanges = [];
         class Exchanges {
-            constructor(nombre, container, div, div1, acciones) {
-                this.container = container;
-                this.div = div;
+            constructor(nombre, acciones) {
                 this.nombre = nombre;
                 this.acciones = acciones;
                 this.volumenVenta = 0;
                 this.volumenCompra = 0;
                 this.volumenTotal = 0;
                 this.lista = [];
-                this.div1
                 this.tickers = [];
             }
         }
         socket.emit('EXCHANGES');
         socket.on('EXCHANGES', (data) => {
-            var cont = 0;
             for (var a in data) {
-                let container = "container" + cont.toString();
-                let div = "div" + cont.toString();
-                let div1 = "div1" + cont.toString();
-                const exchange = new Exchanges(data[a].name, container, div, div1, data[a].listed_companies);
+                const exchange = new Exchanges(data[a].name, data[a].listed_companies);
                 listaExchanges.push(exchange)
-                cont++;
-
             }
         })
         socket.emit('STOCKS');
@@ -94,28 +151,37 @@
     </script>
 </head>
 
-<body>
-    <a href="index.html" class="button"><button type="button">Desconectarse</button></a>
-    <div id="div2" style="width: 1000px; height: 500px"></div>
-    <script type="text/javascript">
+<body background="imgs/fondo2.png">
+    <div class="topcorner">
+        <a href="index.html" class="button"><button  style="vertical-align:middle"><span><h2>Desconectarse</h2></span></button></a>
+    </div>
+    <div class="lesscorner">
+        <a href="stocks.html" class="button"><button  style="vertical-align:middle"><span><h2>Listado de acciones</h2></span></button></a>
+    </div>
+    <div class="lescorner">
+        <a href="exchanges.html" class="button"><button  style="vertical-align:middle"><span><h2>Listado de mercados de valores</h2></span></button></a>
+    </div>
+    <h1 class=" center " style="text-align:center; color:rgb(10, 10, 10); "><u>Participación de mercado</u></h1>
+    <div id="div2 " style="width: 700px; height: 500px "></div>
+    <script type="text/javascript ">
         WebSocketTest()
 
         function drawChart(lista) {
             if (lista === undefined) {
                 return;
             }
-
             var data = google.visualization.arrayToDataTable(lista)
             var options = {
-                title: 'Participación de Mercado'
+                title: 'Porcentaje sobre la suma del Volumen Total de todos los mercados de valores'
             };
-
-            var chart = new google.visualization.PieChart(document.getElementById("div2"));
-
+            var chart = new google.visualization.PieChart(document.getElementById("div2 "));
             chart.draw(data, options);
         }
     </script>
-    </script>
+    <hr>
+    <footer>
+        <h4>Para mayor información visitar: <a href="https://mercadosenlinea.inversionessecurity.cl/www/resumen.html ">Mercados en linea</a></h4>
+    </footer>
 </body>
 
 </html>
