@@ -1,33 +1,172 @@
-<!DOCTYPE html>
 <html>
+
+<head>
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        
+        td,
+        th {
+            border: 1px solid black;
+            text-align: left;
+            padding: 8px;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #ffffff;
+        }
+        
+        .button {
+            display: inline-block;
+            border-radius: 4px;
+            background-color: rgb(211, 211, 211);
+            border: none;
+            color: black;
+            text-align: center;
+            font-size: 28px;
+            padding: 20px;
+            width: 200px;
+            transition: all 0.5s;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .button span {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            transition: 0.5s;
+        }
+        
+        .button span:after {
+            content: '\00bb';
+            position: absolute;
+            opacity: 0;
+            top: 0;
+            right: -20px;
+            transition: 0.5s;
+        }
+        
+        .button:hover span {
+            padding-right: 25px;
+        }
+        
+        .button:hover span:after {
+            opacity: 1;
+            right: 0;
+        }
+        
+        .topcorner {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+        
+        .topleft {
+            position: absolute;
+            top: 8px;
+            left: 16px;
+            font-size: 18px;
+        }
+    </style>
+</head>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
 
-<body>
-
-    <h1>Exchanges Disponibles</h1>
-    <a href="index.html" class="button"><button type="button">Desconectarse</button></a>
+<body background="imgs/fondo2.png.png">
+    <div class="topleft">
+        <a title="Acciones " href="https://www.emol.com/economia/acciones/" target="_blank"><img src="imgs/emol.png " width="30 " height="30 " alt="Acciones en emol " /></a>
+    </div>
+    <div class="topcorner">
+        <a href="index.html" class="button"><button  style="vertical-align:middle"><span><h2>Desconectarse</h2></span></button></a>
+    </div>
+    <h1 class="center" style="text-align:center; color:rgb(10, 10, 10);"><u>Listado de Exchanges</u></h1>
     <div id="demo"></div>
-
     <script>
         var socket = io("wss://le-18262636.bitzonte.com", {
             path: '/stocks'
         }, {
             transports: ['websocket']
         });
-        var x = [];
+        var x = "<form action='prueba.html'><label for='Exchanges'><h2>Escoge un exchange para ver sus detalles en el tiempo:</h2></label><select id='var' name='var'>"
         socket.emit('EXCHANGES');
         var h = 0;
         socket.on('EXCHANGES', (data) => {
             for (var i in data) {
                 console.log(data[i].exchange_ticker);
-                x += "<form action='prueba.html'  method='get' > <input type='hidden' name = 'var' value =" + data[i].exchange_ticker + " / ><button type = 'submit' >" + data[i].name + "</button> </form > "
+                x += "<option value=" + data[i].exchange_ticker + ">" + data[i].name + "</option>"
             }
+            x += "</select><input type='submit'></form>"
             document.getElementById("demo").innerHTML = x;
         })
     </script>
-    <script>
-    </script>
-    </form>
+    <hr>
+    <h3 class="center" style="text-align:center; border:2px solid black;">La siguiente tabla muestra las 5 principales bolsas de valores del mundo</h3>
+    <table>
+        <tr>
+            <th>Ranking</th>
+            <th>Bolsa de valores del mundo</th>
+            <th>Idicadores</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>Bolsa de Nueva York (NYSE)</td>
+            <td>
+                Dow Jones</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>NASDAQ</td>
+            <td>Nasdaq 100</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>Bolsa de Tokio</td>
+            <td>Nikkei 225</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>Bolsa de Londres</td>
+            <td>FTSE 100</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>Bolsa de Shanghái</td>
+            <td>SEEC</td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td>Bolsa de Nueva York (NYSE)</td>
+            <td>
+                Dow Jones</td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td>Bolsa de Toronto</td>
+            <td>Índice S&P/TSX 60</td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td>Deutsche Börse</td>
+            <td>DAX</td>
+        </tr>
+        <tr>
+            <td>9</td>
+            <td>Australian Securities Exchange</td>
+            <td>S&P/ASX 200</td>
+        </tr>
+        <tr>
+            <td>10</td>
+            <td>Bombay Stock Exchange</td>
+            <td>BSE SENSEX</td>
+        </tr>
+    </table>
+    <hr>
+    <footer>
+        <h4>Para mayor información visitar: <a href="https://mercadosenlinea.inversionessecurity.cl/www/resumen.html ">Mercados en linea</a></h4>
+    </footer>
 
 </body>
 
