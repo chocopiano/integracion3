@@ -99,7 +99,7 @@
         var h = 0;
         socket.on('STOCKS', (data) => {
             for (var i = 0; i < data.length; i++) {
-                x += "<option value=" + data[i].ticker + ">" + data[i].company_name + "</option>"
+                x += "<option value=" + data[i].ticker + ">" + data[i].company_name + ' from ' + data[i].country + "</option>"
 
             }
             x += "</select><input type='submit'></form>"
